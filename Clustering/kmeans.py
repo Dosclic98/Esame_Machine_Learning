@@ -22,8 +22,14 @@ class Kmeans:
             for index, row in zip(range(0,self.dataset.shape[0]), self.dataset.itertuples()):
                 distances = []
                 for center in centroids:
-                    distances.append(self.calculateDistance(center, row))
-                self.clusters[index] = distances.index(min(distances))
+                    # If the centroid representing that group is set to None it means there was 
+                    # no element part of that group
+                    if(center is not None):
+                        distances.append(self.calculateDistance(center, row))
+                    else:
+                        distances.append(None)
+                self.clusters[index] = distances.index(min(dist for dist in distances if dist is not None))
+            oldCentroids = centroids.copy()
             self.recalculateCentroids()
             quiescent = np.array_equal(self.clusters, oldClusters)
         
@@ -36,7 +42,15 @@ class Kmeans:
         return centroids
     
     def recalculateCentroids(self):
-        # TODO From here
+        centroids = [None] * self.k
+        numElem = [0] * self.k
+        for cl, row in zip(self.clusters, self.dataset.itertuples()):
+            if(centroids[cl] == None): centroids[cl] = row
+            else: centroids[cl] += row
+            numElem[cl] += 1
+        # TODO Fix his division
+        centroids[cl] = centroids[cl] / numElem[cl]
+        return centroids
     
     def calculateDistance(self, a, b):
         lenght = len(a)
