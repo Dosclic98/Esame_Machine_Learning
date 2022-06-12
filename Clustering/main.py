@@ -19,8 +19,8 @@ dataset = dataset.drop('p1', axis=1)
 datasetStab = dataset.drop('stabf', axis=1)
 datasetStabF = dataset.drop('stab', axis=1)
 
-cl1 = Kmeans(datasetStab, 2)
-cl1.clusterize(showConfusion=True)
+#cl1 = Kmeans(datasetStab, 2)
+#cl1.clusterize(showConfusion=False)
 
 cl2 = Kmeans(datasetStabF, 2)
 cl2.clusterize(showConfusion=True)

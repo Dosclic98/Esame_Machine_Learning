@@ -4,8 +4,11 @@ from multiprocessing.dummy import Array
 from operator import index
 from cv2 import sqrt
 import numpy as np
+import pandas as pd
 import random
 from collections import Counter
+
+from scipy import rand
 
 class Kmeans:
     def __init__(self, dataset, k):
@@ -40,10 +43,15 @@ class Kmeans:
             # TODO Implement confusion matrix
             print(Counter(self.target))
             print(np.bincount(self.clusters))
+            df = pd.DataFrame({'Labels': self.target, 'Clusters': self.clusters})
+            ct = pd.crosstab(df['Labels'], df['Clusters'])
+            print(ct)
+        return self.clusters
         
         
     def initCentroids(self):
         centroids = []
+        random.seed = 10
         for i in range(0, self.k):
             index = random.randint(0, self.dataset.count(axis=0)[0])
             centroids.append(self.dataset.iloc[index])
