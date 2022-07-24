@@ -10,7 +10,7 @@ import pandas as pd
 import os
 
 from kmeans import Kmeans
-print(os.listdir())
+
 dataset = pd.read_csv("data/Data_for_UCI_named.csv")
 # The p1 attribute is a non predictive one 
 dataset = dataset.drop('p1', axis=1)
