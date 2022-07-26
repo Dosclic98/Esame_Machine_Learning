@@ -12,6 +12,7 @@ import sklearn
 from sklearn.metrics import silhouette_samples, silhouette_score
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 from scipy import rand
 
@@ -45,7 +46,6 @@ class Kmeans:
             quiescent = np.array_equal(self.centroids, oldCentroids)
             
         cost = self.optimizFunc()
-        print("Cost is:", cost)
 
         return self.clusters, cost
         
@@ -154,7 +154,6 @@ class Kmeans:
 
         ax1.set_yticks([])  # Clear the yaxis labels / ticks
         ax1.set_xticks([-0.1, 0, 0.2, 0.4, 0.6, 0.8, 1])
-        plt.show()
         
     def silhouetteCoeff(self):
         silhouettes = np.array([]) 
@@ -232,11 +231,11 @@ class Kmeans:
         fnSum = 0
         for i in range(self.dataset.shape[0]):
             for j in range(i+1, self.dataset.shape[0]):
-                if self.dataset.iloc[i][numCols-1] == self.dataset.iloc[i][numCols-1] and self.clusters[i] == self.clusters[j]:
+                if self.target[i] == self.target[j] and self.clusters[i] == self.clusters[j]:
                     tpSum = tpSum + 1
-                elif self.dataset.iloc[i][numCols-1] != self.dataset.iloc[i][numCols-1] and self.clusters[i] != self.clusters[j]:
+                elif self.target[i] != self.target[j] and self.clusters[i] != self.clusters[j]:
                     tnSum = tnSum + 1
-                elif self.dataset.iloc[i][numCols-1] != self.dataset.iloc[i][numCols-1] and self.clusters[i] == self.clusters[j]:
+                elif self.target[i] != self.target[j] and self.clusters[i] == self.clusters[j]:
                     fpSum = fpSum + 1
                 else:
                     fnSum = fnSum + 1
@@ -254,3 +253,5 @@ class Kmeans:
         print("Recall:", recall)
         print("F score:", f1measure)
         
+    def plotScatter(self):
+        sns.pairplot(self.dataset.assign(hue=self.target), hue="hue")
