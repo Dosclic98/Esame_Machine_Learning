@@ -8,7 +8,6 @@ import numpy as np
 import pandas as pd
 import random
 from collections import Counter
-import sklearn
 from sklearn.metrics import silhouette_samples, silhouette_score
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
