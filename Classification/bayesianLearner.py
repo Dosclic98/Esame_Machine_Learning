@@ -90,34 +90,37 @@ class BayesianLearner:
         for i in self.classNames:
             for j in self.classNames:
                 if i != j:
-                    print(ct[i][j])#wrongClass += ct[i][j]
+                    wrongClass += ct[i][j]
                 else:
-                    print(ct[i][j])#corrClass += ct[i][j]
+                    corrClass += ct[i][j]
         print(ct)
         print("Correctly classified instances:",corrClass)
         print("incorrectly classified instances:",wrongClass)
+        self.calcPrecRecall(ct)
         
-    def calcPrecRecall(self, targetValues, predictions):
-        tpSum = 0
-        tnSum = 0
-        fpSum = 0
-        fnSum = 0
-        for i in range(self.dataset.shape[0]):
-            for j in range(i+1, self.dataset.shape[0]):
-                if self.target[i] == self.target[j] and self.clusters[i] == self.clusters[j]:
-                    tpSum = tpSum + 1
-                elif self.target[i] != self.target[j] and self.clusters[i] != self.clusters[j]:
-                    tnSum = tnSum + 1
-                elif self.target[i] != self.target[j] and self.clusters[i] == self.clusters[j]:
-                    fpSum = fpSum + 1
-                else:
-                    fnSum = fnSum + 1
-        
-        rand_index = (TP+TN)/(TP+TN+FP+FN)
-        precision = TP/(TP+FP)
-        recall = TP/(TP+FN)
-        f1measure = (2*(precision*recall)) / (precision+recall)
-        print("Accuracy:", rand_index)
-        print("Precision:", precision)
-        print("Recall:", recall)
-        print("F score:", f1measure)
+    def calcPrecRecall(self, confusionMatrix):
+        for cl in self.classNames:
+            print("=== Detailed Accuracy for class", cl, "===")
+            TP = 0
+            TN = 0
+            FP = 0
+            FN = 0
+            for i in self.classNames:
+                for j in self.classNames:
+                    if i == cl and i == j:
+                        TP += confusionMatrix[i][j]
+                    if i != cl and i == j:
+                        TN += confusionMatrix[i][j]
+                    if i == cl and i != j:
+                        FP += confusionMatrix[i][j]
+                    if i != cl and i != j:
+                        FN += confusionMatrix[i][j]
+                
+            accuracy = (TP+TN)/(TP+TN+FP+FN)
+            precision = TP/(TP+FP)
+            recall = TP/(TP+FN)
+            f1measure = (2*(precision*recall)) / (precision+recall)
+            print("Accuracy:", accuracy)
+            print("Precision:", precision)
+            print("Recall:", recall)
+            print("F measure:", f1measure)
