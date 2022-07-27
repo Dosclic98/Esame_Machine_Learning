@@ -105,6 +105,7 @@ class BayesianLearner:
             TN = 0
             FP = 0
             FN = 0
+            sum = 0
             for i in self.classNames:
                 for j in self.classNames:
                     if i == cl and i == j:
@@ -115,6 +116,7 @@ class BayesianLearner:
                         FP += confusionMatrix[i][j]
                     if i != cl and i != j:
                         FN += confusionMatrix[i][j]
+                    sum += confusionMatrix[i][j]
                 
             accuracy = (TP+TN)/(TP+TN+FP+FN)
             precision = TP/(TP+FP)
@@ -122,10 +124,12 @@ class BayesianLearner:
             f1measure = (2*(precision*recall)) / (precision+recall)
             tpRate = TP / (TP + FN)
             fpRate = FP / (FP + TN)
+            pe = (((TP+FN)/sum)*((TP+FP)/sum)) + (((TN+FP)/sum)*((TN+FN)/sum))
+            kCoeff = (accuracy - pe) / (1 - pe)
             print("Accuracy:", accuracy)
             print("Precision:", precision)
             print("Recall:", recall)
             print("F measure:", f1measure)
             print("True Positive Rate:", tpRate)
             print("False Positive Rate:", fpRate)
-            #TODO Calculate k coefficients 
+            print("K-Coefficent", kCoeff)
