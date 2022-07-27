@@ -13,6 +13,7 @@ from sklearn.metrics import silhouette_samples, silhouette_score
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import seaborn as sns
+import statistics
 
 from scipy import rand
 
@@ -41,8 +42,8 @@ class BayesianLearner:
             dataInClass = self.datasetByClass[i]
             for j in range(dataInClass.shape[1]):
                 ithCol = dataInClass.iloc[:,j]
-                self.mus[i][j] = np.mean(ithCol)
-                self.vars[i][j] = np.var(ithCol)
+                self.mus[i][j] = statistics.mean(ithCol)
+                self.vars[i][j] = statistics.variance(ithCol)
     
     def predict(self, case, className):
         if className not in self.classNames:
@@ -71,7 +72,6 @@ class BayesianLearner:
             bestI = 0
             for i in range(len(self.classNames)):
                 prob = self.predict(datasetTest.iloc[j], self.classNames[i])
-                print(prob, self.classNames[i])
                 if prob > bestProb:
                     bestProb = prob
                     bestI = i
@@ -85,7 +85,17 @@ class BayesianLearner:
         print(pd.value_counts(predictions))
         df = pd.DataFrame({'Labels': targetValues, 'Predicted': predictions})
         ct = pd.crosstab(df['Labels'], df['Predicted'])
+        corrClass = 0
+        wrongClass = 1
+        for i in self.classNames:
+            for j in self.classNames:
+                if i != j:
+                    print(ct[i][j])#wrongClass += ct[i][j]
+                else:
+                    print(ct[i][j])#corrClass += ct[i][j]
         print(ct)
+        print("Correctly classified instances:",corrClass)
+        print("incorrectly classified instances:",wrongClass)
         
     def calcPrecRecall(self, targetValues, predictions):
         tpSum = 0
@@ -102,11 +112,7 @@ class BayesianLearner:
                     fpSum = fpSum + 1
                 else:
                     fnSum = fnSum + 1
-        den = math.comb(self.dataset.shape[0], 2)
-        TP = tpSum / den
-        TN = tnSum / den
-        FP = fpSum / den
-        FN = fnSum / den
+        
         rand_index = (TP+TN)/(TP+TN+FP+FN)
         precision = TP/(TP+FP)
         recall = TP/(TP+FN)
