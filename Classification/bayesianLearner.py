@@ -86,7 +86,7 @@ class BayesianLearner:
         df = pd.DataFrame({'Labels': targetValues, 'Predicted': predictions})
         ct = pd.crosstab(df['Labels'], df['Predicted'])
         corrClass = 0
-        wrongClass = 1
+        wrongClass = 0
         for i in self.classNames:
             for j in self.classNames:
                 if i != j:
