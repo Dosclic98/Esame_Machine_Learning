@@ -120,7 +120,12 @@ class BayesianLearner:
             precision = TP/(TP+FP)
             recall = TP/(TP+FN)
             f1measure = (2*(precision*recall)) / (precision+recall)
+            tpRate = TP / (TP + FN)
+            fpRate = FP / (FP + TN)
             print("Accuracy:", accuracy)
             print("Precision:", precision)
             print("Recall:", recall)
             print("F measure:", f1measure)
+            print("True Positive Rate:", tpRate)
+            print("False Positive Rate:", fpRate)
+            #TODO Calculate k coefficients 
