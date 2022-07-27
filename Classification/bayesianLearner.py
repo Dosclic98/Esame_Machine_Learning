@@ -1,4 +1,5 @@
 from ast import And
+from imghdr import tests
 import math
 from multiprocessing.dummy import Array
 from operator import index
@@ -26,8 +27,8 @@ class BayesianLearner:
         self.target = dataset.iloc[: , -1]
         self.classNames = self.target.unique()
         # Initialize the matrixes containing means and variaces
-        self.mus = [[0 for _ in range(self.dataset.shape[1])]] * len(self.classNames)
-        self.vars = [[0 for _ in range(self.dataset.shape[1])]] * len(self.classNames)
+        self.mus = [[0 for _ in range(self.dataset.shape[1])] for _ in range(len(self.classNames))] 
+        self.vars = [[0 for _ in range(self.dataset.shape[1])] for _ in range(len(self.classNames))]
         self.datasetByClass = []
         for className in self.classNames:
             # Get the index of the cases having a certain class
@@ -46,6 +47,7 @@ class BayesianLearner:
     def predict(self, case, className):
         if className not in self.classNames:
             raise Exception("Unknown class name used")
+        
         index = np.where(self.classNames == className)[0][0]
         
         dataInClass = self.datasetByClass[index]
@@ -56,4 +58,60 @@ class BayesianLearner:
         prod *= prior
         
         return prod    
+    
+    def evaluate(self, testSet):
+        # Remove the last column (the target one)
+        datasetTest = testSet.iloc[: , :-1]
+        # Save the target row in a separate variable
+        targetTest = testSet.iloc[: , -1]
         
+        predictions = []
+        for j in range(datasetTest.shape[0]):
+            bestProb = -1
+            bestI = 0
+            for i in range(len(self.classNames)):
+                prob = self.predict(datasetTest.iloc[j], self.classNames[i])
+                print(prob, self.classNames[i])
+                if prob > bestProb:
+                    bestProb = prob
+                    bestI = i
+            predictions.append(self.classNames[bestI])
+        
+        self.calcStatistics(targetTest, predictions)
+        
+    
+    def calcStatistics(self, targetValues, predictions):
+        print(Counter(targetValues))
+        print(pd.value_counts(predictions))
+        df = pd.DataFrame({'Labels': targetValues, 'Predicted': predictions})
+        ct = pd.crosstab(df['Labels'], df['Predicted'])
+        print(ct)
+        
+    def calcPrecRecall(self, targetValues, predictions):
+        tpSum = 0
+        tnSum = 0
+        fpSum = 0
+        fnSum = 0
+        for i in range(self.dataset.shape[0]):
+            for j in range(i+1, self.dataset.shape[0]):
+                if self.target[i] == self.target[j] and self.clusters[i] == self.clusters[j]:
+                    tpSum = tpSum + 1
+                elif self.target[i] != self.target[j] and self.clusters[i] != self.clusters[j]:
+                    tnSum = tnSum + 1
+                elif self.target[i] != self.target[j] and self.clusters[i] == self.clusters[j]:
+                    fpSum = fpSum + 1
+                else:
+                    fnSum = fnSum + 1
+        den = math.comb(self.dataset.shape[0], 2)
+        TP = tpSum / den
+        TN = tnSum / den
+        FP = fpSum / den
+        FN = fnSum / den
+        rand_index = (TP+TN)/(TP+TN+FP+FN)
+        precision = TP/(TP+FP)
+        recall = TP/(TP+FN)
+        f1measure = (2*(precision*recall)) / (precision+recall)
+        print("Accuracy:", rand_index)
+        print("Precision:", precision)
+        print("Recall:", recall)
+        print("F score:", f1measure)
