@@ -60,7 +60,7 @@ class BayesianLearner:
         
         return prod    
     
-    def evaluate(self, testSet):
+    def evaluate(self, testSet, verbose = True):
         # Remove the last column (the target one)
         datasetTest = testSet.iloc[: , :-1]
         # Save the target row in a separate variable
@@ -77,10 +77,10 @@ class BayesianLearner:
                     bestI = i
             predictions.append(self.classNames[bestI])
         
-        self.calcStatistics(targetTest, predictions)
+        self.calcStatistics(targetTest, predictions, verbose)
         
     
-    def calcStatistics(self, targetValues, predictions):
+    def calcStatistics(self, targetValues, predictions, verbose = True):
         print(Counter(targetValues))
         print(pd.value_counts(predictions))
         df = pd.DataFrame({'Labels': targetValues, 'Predicted': predictions})
@@ -94,13 +94,13 @@ class BayesianLearner:
                 else:
                     corrClass += ct[i][j]
         print(ct)
-        print("Correctly classified instances:",corrClass)
-        print("incorrectly classified instances:",wrongClass)
-        self.calcPrecRecall(ct)
+        if(verbose):
+            print("Correctly classified instances:",corrClass)
+            print("incorrectly classified instances:",wrongClass)
+        self.calcPrecRecall(ct, verbose)
         
-    def calcPrecRecall(self, confusionMatrix):
+    def calcPrecRecall(self, confusionMatrix, verbose = True):
         for cl in self.classNames:
-            print("=== Detailed Accuracy for class", cl, "===")
             TP = 0
             TN = 0
             FP = 0
@@ -126,10 +126,12 @@ class BayesianLearner:
             fpRate = FP / (FP + TN)
             pe = (((TP+FN)/sum)*((TP+FP)/sum)) + (((TN+FP)/sum)*((TN+FN)/sum))
             kCoeff = (accuracy - pe) / (1 - pe)
-            print("Accuracy:", accuracy)
-            print("Precision:", precision)
-            print("Recall:", recall)
-            print("F measure:", f1measure)
-            print("True Positive Rate:", tpRate)
-            print("False Positive Rate:", fpRate)
-            print("K-Coefficent", kCoeff)
+            if verbose:
+                print("=== Detailed Accuracy for class", cl, "===")
+                print("Accuracy:", accuracy)
+                print("Precision:", precision)
+                print("Recall:", recall)
+                print("F measure:", f1measure)
+                print("True Positive Rate:", tpRate)
+                print("False Positive Rate:", fpRate)
+                print("K-Coefficent", kCoeff)
