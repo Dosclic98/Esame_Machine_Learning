@@ -3,6 +3,7 @@ from imghdr import tests
 import math
 from multiprocessing.dummy import Array
 from operator import index
+import re
 from statistics import variance
 from cv2 import mean, sqrt
 import numpy as np
@@ -77,12 +78,10 @@ class BayesianLearner:
                     bestI = i
             predictions.append(self.classNames[bestI])
         
-        self.calcStatistics(targetTest, predictions, verbose)
+        return self.calcStatistics(targetTest, predictions, verbose)
         
     
     def calcStatistics(self, targetValues, predictions, verbose = True):
-        print(Counter(targetValues))
-        print(pd.value_counts(predictions))
         df = pd.DataFrame({'Labels': targetValues, 'Predicted': predictions})
         ct = pd.crosstab(df['Labels'], df['Predicted'])
         corrClass = 0
@@ -93,13 +92,16 @@ class BayesianLearner:
                     wrongClass += ct[i][j]
                 else:
                     corrClass += ct[i][j]
-        print(ct)
         if(verbose):
+            print(Counter(targetValues))
+            print(pd.value_counts(predictions))
+            print(ct)
             print("Correctly classified instances:",corrClass)
             print("incorrectly classified instances:",wrongClass)
-        self.calcPrecRecall(ct, verbose)
+        return self.calcPrecRecall(ct, verbose)
         
     def calcPrecRecall(self, confusionMatrix, verbose = True):
+        results = pd.DataFrame(index=self.classNames, columns=range(7))
         for cl in self.classNames:
             TP = 0
             TN = 0
@@ -135,3 +137,12 @@ class BayesianLearner:
                 print("True Positive Rate:", tpRate)
                 print("False Positive Rate:", fpRate)
                 print("K-Coefficent", kCoeff)
+            results.at[cl,0] = accuracy
+            results.at[cl,1] = precision
+            results.at[cl,2] = recall
+            results.at[cl,3] = f1measure
+            results.at[cl,4] = tpRate
+            results.at[cl,5] = fpRate
+            results.at[cl,6] = kCoeff
+        return results
+            
