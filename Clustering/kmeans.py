@@ -28,8 +28,7 @@ class Kmeans:
     def clusterize(self):
         self.centroids = self.initCentroids()
         quiescent = False
-        x = 0
-        while x < 50:
+        while not quiescent:
             for index, row in zip(range(0,self.dataset.shape[0]), self.dataset.itertuples(index=False)):
                 distances = []
                 for center in self.centroids:
@@ -43,7 +42,6 @@ class Kmeans:
             oldCentroids = self.centroids.copy()
             self.centroids = self.recalculateCentroids()
             quiescent = np.array_equal(self.centroids, oldCentroids)
-            x += 1
             
         cost = self.optimizFunc()
 
