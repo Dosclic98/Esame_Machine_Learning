@@ -54,7 +54,6 @@ class Kmeans:
         selected = []
         for i in range(0, self.k):
             index = random.choice([j for j in range(self.dataset.count(axis=0)[0]) if j not in selected])
-            #index = random.randint(0, self.dataset.count(axis=0)[0]-1)
             centroids.append(self.dataset.iloc[index])
             selected.append(index)
         return centroids
