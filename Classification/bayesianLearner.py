@@ -56,7 +56,9 @@ class BayesianLearner:
         prior = dataInClass.shape[0] / self.dataset.shape[0]
         prod = 1
         for featureIndex in range(len(case)):
-            prod *= ((1 / (math.sqrt(2*math.pi*self.vars[index][featureIndex])))*(math.exp(-( math.pow(case[featureIndex] - self.mus[index][featureIndex], 2) / (2*self.vars[index][featureIndex]) ))))
+            prod *= ((1 / (math.sqrt(2*math.pi*self.vars[index][featureIndex])))*
+                     (math.exp(-( math.pow(case[featureIndex] - self.mus[index][featureIndex], 2) / 
+                                 (2*self.vars[index][featureIndex]) ))))
         prod *= prior
         
         return prod    
@@ -97,17 +99,13 @@ class BayesianLearner:
             print(pd.value_counts(predictions))
             print(ct)
             print("Correctly classified instances:",corrClass)
-            print("incorrectly classified instances:",wrongClass)
+            print("Incorrectly classified instances:",wrongClass)
         return self.calcPrecRecall(ct, verbose)
         
     def calcPrecRecall(self, confusionMatrix, verbose = True):
         results = pd.DataFrame(index=self.classNames, columns=range(7))
         for cl in self.classNames:
-            TP = 0
-            TN = 0
-            FP = 0
-            FN = 0
-            sum = 0
+            TP, TN, FP, FN, sum = 0, 0, 0, 0, 0
             for i in self.classNames:
                 for j in self.classNames:
                     if i == cl and i == j:
