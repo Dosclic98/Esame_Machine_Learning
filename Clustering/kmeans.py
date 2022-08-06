@@ -51,9 +51,12 @@ class Kmeans:
         
     def initCentroids(self):
         centroids = []
+        selected = []
         for i in range(0, self.k):
-            index = random.randint(0, self.dataset.count(axis=0)[0]-1)
+            index = random.choice([j for j in range(self.dataset.count(axis=0)[0]) if j not in selected])
+            #index = random.randint(0, self.dataset.count(axis=0)[0]-1)
             centroids.append(self.dataset.iloc[index])
+            selected.append(index)
         return centroids
     
     def recalculateCentroids(self):
@@ -80,7 +83,7 @@ class Kmeans:
         n = self.dataset.count(axis=0)[0]
         acc = 0
         for index, row in zip(range(0,self.dataset.shape[0]), self.dataset.itertuples(index=False)):
-            acc += self.calculateDistance(row, self.centroids[self.clusters[index]])
+            acc += self.calculateDistance(row, self.centroids[self.clusters[index]])**2
         return acc / n
     
     def calcPlotSilhouete(self):
