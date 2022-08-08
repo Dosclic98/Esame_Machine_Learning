@@ -253,4 +253,4 @@ class Kmeans:
         print("F score:", f1measure)
         
     def plotScatter(self):
-        sns.pairplot(self.dataset.assign(hue=self.target), hue="hue")
+        sns.pairplot(self.dataset.assign(trgt=self.target), hue="trgt")
